@@ -42,7 +42,9 @@ jobs:
           done
           git diff --exit-code
 
-      - run: flutter analyze
+      # The lint set in analysis_options.yaml is enforced fully:
+      # analyzer infos fail the build too.
+      - run: flutter analyze --fatal-infos
 
       - name: Test
         run: |
@@ -51,7 +53,10 @@ jobs:
             (cd "$dir" && flutter test --coverage)
           done
 
-      - name: Summarize coverage
+      - name: Check and summarize coverage
+        env:
+          # Line coverage of every package must stay above this floor.
+          COVERAGE_FLOOR: 70
         run: |
           {
             echo "### Test coverage"
@@ -59,13 +64,46 @@ jobs:
             echo "| Package | Lines |"
             echo "|---|---|"
             for report in */*/coverage/lcov.info; do
-              awk -F: -v name="${report%/coverage/lcov.info}" '
+              awk -F: -v name="${report%/coverage/lcov.info}" -v floor="$COVERAGE_FLOOR" '
                 /^LF:/ { found += $2 }
                 /^LH:/ { hit += $2 }
-                END { printf "| `%s` | %d%% (%d of %d) |\n", name, 100 * hit / found, hit, found }
-              ' "$report"
+                END {
+                  pct = 100 * hit / found
+                  printf "| `%s` | %d%% (%d of %d) |\n", name, pct, hit, found
+                  if (pct < floor) {
+                    printf "::error::%s line coverage %.1f%% is below the %d%% floor\n", name, pct, floor > "/dev/stderr"
+                    exit 1
+                  }
+                }
+              ' "$report" || exit 1
             done
           } >> "$GITHUB_STEP_SUMMARY"
+
+  commits:
+    name: Conventional Commits
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Check commit subjects
+        env:
+          BASE: origin/${{ github.base_ref }}
+        run: |
+          pattern='^(feat|fix|refactor|perf|test|docs|style|build|ci|chore)(\([a-z]+\))?: .+'
+          bad=0
+          while IFS= read -r subject; do
+            if ! printf '%s' "$subject" | grep -Eq "$pattern"; then
+              echo "::error title=Bad commit subject::$subject"
+              bad=1
+            fi
+          done < <(git log --no-merges --format=%s "$BASE..HEAD")
+          if [[ $bad -ne 0 ]]; then
+            echo 'Commit subjects must look like "feat(kit): scale the countdown ring".'
+            echo 'See CONTRIBUTING.md for the full convention.'
+            exit 1
+          fi
 
   build:
     name: Build ${{ matrix.app }}
