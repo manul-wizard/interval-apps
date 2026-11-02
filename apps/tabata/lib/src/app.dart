@@ -20,26 +20,24 @@ class TabataApp extends StatelessWidget {
   final KeepScreenOn keepScreenOn;
 
   @override
-  Widget build(BuildContext context) {
-    return IntervalApp(
-      settings: settings,
-      planOf: (settings) => settings.toPlan(),
-      languageOf: (settings) => settings.language,
-      themeModeOf: (settings) => settings.themeMode,
-      withThemeMode: (settings, themeMode) =>
-          settings.copyWith(themeMode: themeMode),
-      cues: cues,
-      keepScreenOn: keepScreenOn,
-      onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      phaseLabel: _phaseLabel,
-      formatTime: (snapshot) =>
-          snapshot.remainingSeconds.toString().padLeft(2, '0'),
-      settingsBuilder: (_) =>
-          SettingsScreen(settings: settings, version: version),
-    );
-  }
+  Widget build(BuildContext context) => IntervalApp(
+    settings: settings,
+    planOf: (settings) => settings.toPlan(),
+    languageOf: (settings) => settings.language,
+    themeModeOf: (settings) => settings.themeMode,
+    withThemeMode: (settings, themeMode) =>
+        settings.copyWith(themeMode: themeMode),
+    cues: cues,
+    keepScreenOn: keepScreenOn,
+    onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: AppLocalizations.supportedLocales,
+    phaseLabel: _phaseLabel,
+    formatTime: (snapshot) =>
+        snapshot.remainingSeconds.toString().padLeft(2, '0'),
+    settingsBuilder: (_) =>
+        SettingsScreen(settings: settings, version: version),
+  );
 
   static String _phaseLabel(BuildContext context, Phase phase) {
     final l10n = AppLocalizations.of(context);

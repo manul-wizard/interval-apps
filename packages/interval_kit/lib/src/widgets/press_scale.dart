@@ -24,17 +24,15 @@ class _PressScaleState extends State<PressScale> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Listener(
-      onPointerDown: (_) => _setPressed(true),
-      onPointerUp: (_) => _setPressed(false),
-      onPointerCancel: (_) => _setPressed(false),
-      child: AnimatedScale(
-        scale: _pressed ? _pressedScale : 1,
-        duration: _duration,
-        curve: Curves.easeOut,
-        child: widget.child,
-      ),
-    );
-  }
+  Widget build(BuildContext context) => Listener(
+    onPointerDown: (_) => _setPressed(true),
+    onPointerUp: (_) => _setPressed(false),
+    onPointerCancel: (_) => _setPressed(false),
+    child: AnimatedScale(
+      scale: _pressed ? _pressedScale : 1,
+      duration: _duration,
+      curve: Curves.easeOut,
+      child: widget.child,
+    ),
+  );
 }

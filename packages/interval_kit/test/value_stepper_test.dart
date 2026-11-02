@@ -8,21 +8,19 @@ void main() {
     WidgetTester tester, {
     required int value,
     required ValueChanged<int> onChanged,
-  }) {
-    return tester.pumpWidget(
-      MaterialApp(
-        localizationsDelegates: KitLocalizations.localizationsDelegates,
-        home: Scaffold(
-          body: IntSettingStepper(
-            label: 'Rounds',
-            value: value,
-            range: const IntRange(1, 3),
-            onChanged: onChanged,
-          ),
+  }) => tester.pumpWidget(
+    MaterialApp(
+      localizationsDelegates: KitLocalizations.localizationsDelegates,
+      home: Scaffold(
+        body: IntSettingStepper(
+          label: 'Rounds',
+          value: value,
+          range: const IntRange(1, 3),
+          onChanged: onChanged,
         ),
       ),
-    );
-  }
+    ),
+  );
 
   testWidgets('changes the value by one per tap', (tester) async {
     int? changed;

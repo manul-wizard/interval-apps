@@ -12,18 +12,26 @@ analyzer:
 linter:
   rules:
     - always_declare_return_types
+    - always_put_required_named_parameters_first
+    - avoid_annotating_with_dynamic
     - avoid_dynamic_calls
+    - avoid_positional_boolean_parameters
     - avoid_redundant_argument_values
     - cancel_subscriptions
     - close_sinks
     - directives_ordering
+    - lines_longer_than_80_chars
     - prefer_const_constructors
     - prefer_const_declarations
+    - prefer_expression_function_bodies
     - prefer_final_in_for_each
     - prefer_final_locals
     - prefer_single_quotes
+    - sort_constructors_first
     - sort_pub_dependencies
+    - type_annotate_public_apis
     - unawaited_futures
     - unnecessary_lambdas
     - unnecessary_parenthesis
+    - unnecessary_statements
     - use_super_parameters

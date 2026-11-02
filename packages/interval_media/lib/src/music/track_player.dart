@@ -61,11 +61,11 @@ final class JustAudioTrackPlayer implements TrackPlayer {
 /// Records what is asked of a player, for tests.
 @visibleForTesting
 final class RecordingTrackPlayer implements TrackPlayer {
-  var tracks = const <Track>[];
-  var trackChanges = 0;
-  var playing = false;
-  var plays = 0;
-  var disposed = false;
+  List<Track> tracks = const <Track>[];
+  int trackChanges = 0;
+  bool playing = false;
+  int plays = 0;
+  bool disposed = false;
   final volumes = <double>[];
 
   double get volume => volumes.isEmpty ? 1 : volumes.last;

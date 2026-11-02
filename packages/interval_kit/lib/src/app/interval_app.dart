@@ -104,40 +104,38 @@ class _IntervalAppState<S> extends State<IntervalApp<S>> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-      valueListenable: widget.settings,
-      builder: (context, settings, _) => MaterialApp(
-        debugShowCheckedModeBanner: false,
-        onGenerateTitle: widget.onGenerateTitle,
-        theme: buildIntervalTheme(),
-        darkTheme: buildIntervalTheme(brightness: Brightness.dark),
-        themeMode: widget.themeModeOf(settings),
-        // Without an app bar on the main screen, the status bar icons have
-        // to be told to match the theme.
-        builder: (context, child) => AnnotatedRegion(
-          value: Theme.of(context).brightness == Brightness.dark
-              ? SystemUiOverlayStyle.light
-              : SystemUiOverlayStyle.dark,
-          child: child!,
-        ),
-        locale: widget.languageOf(settings).locale,
-        supportedLocales: widget.supportedLocales,
-        localizationsDelegates: [
-          ...widget.localizationsDelegates,
-          KitLocalizations.delegate,
-        ],
-        home: Builder(
-          builder: (context) => WorkoutScreen(
-            controller: _workout,
-            phaseLabel: widget.phaseLabel,
-            formatTime: widget.formatTime,
-            onOpenSettings: () => Navigator.of(context)
-                .push(MaterialPageRoute<void>(builder: widget.settingsBuilder)),
-            onToggleTheme: () => _toggleTheme(context),
-          ),
+  Widget build(BuildContext context) => ValueListenableBuilder(
+    valueListenable: widget.settings,
+    builder: (context, settings, _) => MaterialApp(
+      debugShowCheckedModeBanner: false,
+      onGenerateTitle: widget.onGenerateTitle,
+      theme: buildIntervalTheme(),
+      darkTheme: buildIntervalTheme(brightness: Brightness.dark),
+      themeMode: widget.themeModeOf(settings),
+      // Without an app bar on the main screen, the status bar icons have
+      // to be told to match the theme.
+      builder: (context, child) => AnnotatedRegion(
+        value: Theme.of(context).brightness == Brightness.dark
+            ? SystemUiOverlayStyle.light
+            : SystemUiOverlayStyle.dark,
+        child: child!,
+      ),
+      locale: widget.languageOf(settings).locale,
+      supportedLocales: widget.supportedLocales,
+      localizationsDelegates: [
+        ...widget.localizationsDelegates,
+        KitLocalizations.delegate,
+      ],
+      home: Builder(
+        builder: (context) => WorkoutScreen(
+          controller: _workout,
+          phaseLabel: widget.phaseLabel,
+          formatTime: widget.formatTime,
+          onOpenSettings: () => Navigator.of(context)
+              .push(MaterialPageRoute<void>(builder: widget.settingsBuilder)),
+          onToggleTheme: () => _toggleTheme(context),
         ),
       ),
-    );
-  }
+    ),
+  );
 }

@@ -92,24 +92,22 @@ class _PlaylistLink extends StatelessWidget {
   final String title;
 
   @override
-  Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: music,
-      builder: (context, _) => SettingLink(
-        label: label,
-        value: AppLocalizations.of(context)
-            .musicTrackCount(music.value[intensity].length),
-        icon: Icons.library_music_outlined,
-        onPressed: () => Navigator.of(context).push(
-          MaterialPageRoute<void>(
-            builder: (_) => PlaylistScreen(
-              library: music,
-              intensity: intensity,
-              title: title,
-            ),
+  Widget build(BuildContext context) => ListenableBuilder(
+    listenable: music,
+    builder: (context, _) => SettingLink(
+      label: label,
+      value: AppLocalizations.of(context)
+          .musicTrackCount(music.value[intensity].length),
+      icon: Icons.library_music_outlined,
+      onPressed: () => Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => PlaylistScreen(
+            library: music,
+            intensity: intensity,
+            title: title,
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
 }

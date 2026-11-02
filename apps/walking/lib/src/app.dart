@@ -33,26 +33,24 @@ class WalkingApp extends StatelessWidget {
   final WorkoutMediaSession? session;
 
   @override
-  Widget build(BuildContext context) {
-    return IntervalApp(
-      settings: settings,
-      planOf: (settings) => settings.toPlan(),
-      languageOf: (settings) => settings.language,
-      themeModeOf: (settings) => settings.themeMode,
-      withThemeMode: (settings, themeMode) =>
-          settings.copyWith(themeMode: themeMode),
-      cues: cues,
-      keepScreenOn: keepScreenOn,
-      onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      phaseLabel: _phaseLabel,
-      formatTime: _formatTime,
-      settingsBuilder: (_) =>
-          SettingsScreen(settings: settings, version: version, music: music),
-      attach: _attach,
-    );
-  }
+  Widget build(BuildContext context) => IntervalApp(
+    settings: settings,
+    planOf: (settings) => settings.toPlan(),
+    languageOf: (settings) => settings.language,
+    themeModeOf: (settings) => settings.themeMode,
+    withThemeMode: (settings, themeMode) =>
+        settings.copyWith(themeMode: themeMode),
+    cues: cues,
+    keepScreenOn: keepScreenOn,
+    onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: AppLocalizations.supportedLocales,
+    phaseLabel: _phaseLabel,
+    formatTime: _formatTime,
+    settingsBuilder: (_) =>
+        SettingsScreen(settings: settings, version: version, music: music),
+    attach: _attach,
+  );
 
   VoidCallback _attach(WorkoutController workout) {
     final music = this.music;
@@ -93,11 +91,10 @@ class WalkingApp extends StatelessWidget {
   static String _phaseLabel(BuildContext context, Phase phase) =>
       _phaseName(AppLocalizations.of(context), phase);
 
-  static String _phaseName(AppLocalizations l10n, Phase phase) {
-    return switch (phase.intensity) {
-      Intensity.prepare => l10n.phasePrepare,
-      Intensity.high => l10n.phaseFast,
-      Intensity.low => l10n.phaseSlow,
-    };
-  }
+  static String _phaseName(AppLocalizations l10n, Phase phase) =>
+      switch (phase.intensity) {
+        Intensity.prepare => l10n.phasePrepare,
+        Intensity.high => l10n.phaseFast,
+        Intensity.low => l10n.phaseSlow,
+      };
 }

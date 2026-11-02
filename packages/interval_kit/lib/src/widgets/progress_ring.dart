@@ -71,21 +71,19 @@ class _ProgressRingState extends State<ProgressRing>
   }
 
   @override
-  Widget build(BuildContext context) {
-    return TweenAnimationBuilder<Color?>(
-      tween: ColorTween(end: widget.color),
-      duration: _colorDuration,
-      builder: (context, color, child) => CustomPaint(
-        painter: _RingPainter(
-          fraction: _fraction,
-          color: color ?? widget.color,
-          trackColor: IntervalColors.of(context).surface,
-        ),
-        child: child,
+  Widget build(BuildContext context) => TweenAnimationBuilder<Color?>(
+    tween: ColorTween(end: widget.color),
+    duration: _colorDuration,
+    builder: (context, color, child) => CustomPaint(
+      painter: _RingPainter(
+        fraction: _fraction,
+        color: color ?? widget.color,
+        trackColor: IntervalColors.of(context).surface,
       ),
-      child: AspectRatio(aspectRatio: 1, child: Center(child: widget.child)),
-    );
-  }
+      child: child,
+    ),
+    child: AspectRatio(aspectRatio: 1, child: Center(child: widget.child)),
+  );
 }
 
 class _RingPainter extends CustomPainter {
