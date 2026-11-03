@@ -27,6 +27,7 @@ void main() {
     WidgetTester tester, {
     double fraction = 1,
     Duration? drainOver = const Duration(seconds: 20),
+    Color color = const Color(0xFF00FF00),
   }) => tester.pumpWidget(
     Center(
       child: SizedBox.square(
@@ -34,7 +35,7 @@ void main() {
         child: ProgressRing(
           remainingFraction: fraction,
           drainOver: drainOver,
-          color: const Color(0xFF00FF00),
+          color: color,
         ),
       ),
     ),
@@ -46,22 +47,26 @@ void main() {
     expectHalfFull(tester);
   });
 
-  testWidgets('refills on its way to draining a new phase', (tester) async {
+  testWidgets('fades a finished phase out through the track color', (
+    tester,
+  ) async {
     await pumpRing(tester);
-    await tester.pump(const Duration(seconds: 10));
-    expectHalfFull(tester);
+    await tester.pump(const Duration(seconds: 20)); // drained to empty
 
-    // The next phase arrives full; the ring sweeps back over 250 ms
-    // before draining the new, shorter phase.
-    await pumpRing(tester, drainOver: const Duration(seconds: 10));
-    await tester.pump(const Duration(milliseconds: 125));
-    expectSweep(tester, -1.5 * math.pi);
-    await tester.pump(const Duration(milliseconds: 125));
-    expectSweep(tester, -2 * math.pi);
+    // The next phase arrives: no sweep back to full. The empty ring hides
+    // in the track color while the new phase takes over underneath.
+    await pumpRing(
+      tester,
+      drainOver: const Duration(seconds: 10),
+      color: const Color(0xFF0000FF),
+    );
+    await tester.pump(const Duration(milliseconds: 100));
+    expectSweep(tester, 0);
 
-    // The refill hands the ring to the new phase's drain, which runs the
-    // phase down to the end.
+    // The new phase drains all the way down: the swap lands mid-pump, the
+    // fresh drain starts ticking on the next one, and then it runs out.
     await tester.pump(const Duration(milliseconds: 300));
+    await tester.pump();
     await tester.pump(const Duration(seconds: 15));
     expectSweep(tester, 0);
   });
