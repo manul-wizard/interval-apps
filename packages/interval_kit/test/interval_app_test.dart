@@ -57,6 +57,25 @@ void main() {
   Brightness brightnessOnScreen(WidgetTester tester) =>
       Theme.of(tester.element(find.byType(WorkoutScreen))).brightness;
 
+  testWidgets('disables reset while the workout is at its beginning', (
+    tester,
+  ) async {
+    Future<FlatTextButton> resetButton() async =>
+        tester.widget(find.widgetWithText(FlatTextButton, 'RESET'));
+
+    await tester.pumpWidget(app());
+    await tester.pump();
+    expect((await resetButton()).onPressed, isNull);
+
+    await tester.tap(find.text('START'));
+    await tester.pump();
+    expect((await resetButton()).onPressed, isNotNull);
+
+    await tester.tap(find.text('RESET'));
+    await tester.pump();
+    expect((await resetButton()).onPressed, isNull);
+  });
+
   testWidgets('labels the paused workout Resume', (tester) async {
     await tester.pumpWidget(app());
     await tester.pump();

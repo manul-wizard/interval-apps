@@ -109,7 +109,9 @@ class WorkoutScreen extends StatelessWidget {
                   const Spacer(),
                   FlatTextButton(
                     label: l10n.reset,
-                    onPressed: controller.reset,
+                    onPressed: controller.status == TimerStatus.ready
+                        ? null
+                        : controller.reset,
                   ),
                   const SizedBox(height: 32),
                 ],
