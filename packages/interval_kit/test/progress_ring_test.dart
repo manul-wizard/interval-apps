@@ -45,6 +45,8 @@ void main() {
     await pumpRing(tester);
     await tester.pump(const Duration(seconds: 10));
     expectHalfFull(tester);
+    // Without a size the painter is invisible however correct the arcs are.
+    expect(tester.getSize(find.byType(ProgressRing)), const Size(200, 200));
   });
 
   testWidgets('fades a finished phase out through the track color', (

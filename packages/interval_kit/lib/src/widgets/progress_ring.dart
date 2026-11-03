@@ -212,11 +212,14 @@ class _ProgressRingState extends State<ProgressRing>
     _trackColor = IntervalColors.of(context).surface;
     return AnimatedBuilder(
       animation: _ticks,
-      builder: (context, _) => CustomPaint(
-        painter: _RingPainter(
-          fraction: _shown,
-          color: _paintedColor,
-          trackColor: _trackColor,
+      builder: (context, _) => AspectRatio(
+        aspectRatio: 1,
+        child: CustomPaint(
+          painter: _RingPainter(
+            fraction: _shown,
+            color: _paintedColor,
+            trackColor: _trackColor,
+          ),
         ),
       ),
     );
