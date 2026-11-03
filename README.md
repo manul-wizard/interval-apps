@@ -95,15 +95,6 @@ flutter run -d chrome    # or pick an Android device
 
 CI runs the same checks on every pull request; see [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow.
 
-## Roadmap
-
-- [x] Tabata timer ported from Unity, with the original look
-- [x] Japanese walking timer with sound cues
-- [x] Web versions on GitHub Pages
-- [x] Walking: separate playlists for fast and slow intervals from the user's own music, cross-faded at every phase change
-- [x] Walking: keep running with the screen off (foreground service, lock-screen controls)
-- [ ] Voice announcements as an alternative to sounds
-
 ## History
 
 The Tabata timer started as a [Unity project](https://github.com/LLarean/tabata-timer). It was rewritten in Flutter to get a much smaller app, a faster web version and native audio features the walking app needs. The design, sounds and settings carried over unchanged.
