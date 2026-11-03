@@ -119,6 +119,42 @@ void main() {
     expect((await resetButton()).onPressed, isNull);
   });
 
+  testWidgets('presses the timer face in on pause', (tester) async {
+    await tester.pumpWidget(app());
+    await tester.pump();
+    // Transform.scale keeps the Z diagonal at 1, so the 2D scale has to be
+    // read off the X entry; getMaxScaleOnAxis would always report 1.
+    double faceScale() => tester
+        .widget<Transform>(
+          find
+              .ancestor(
+                of: find.byType(TimerFace),
+                matching: find.byType(Transform),
+              )
+              .first,
+        )
+        .transform
+        .entry(0, 0);
+
+    expect(faceScale(), moreOrLessEquals(1));
+
+    await tester.tap(find.text('START'));
+    await tester.pump();
+    expect(faceScale(), moreOrLessEquals(1));
+
+    // Pausing rebuilds the screen and starts the press-in; the animation
+    // itself ticks from the following frame.
+    await tester.tap(find.text('STOP'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 200));
+    expect(faceScale(), moreOrLessEquals(0.96, epsilon: 0.01));
+
+    await tester.tap(find.text('RESUME'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(faceScale(), moreOrLessEquals(1, epsilon: 0.02));
+  });
+
   testWidgets('labels the paused workout Resume', (tester) async {
     await tester.pumpWidget(app());
     await tester.pump();
