@@ -49,6 +49,23 @@ void main() {
     expect(tester.getSize(find.byType(ProgressRing)), const Size(200, 200));
   });
 
+  testWidgets('snaps to a fresher measurement instead of refilling', (
+    tester,
+  ) async {
+    await pumpRing(tester);
+    await tester.pump(const Duration(seconds: 5));
+
+    // The engine measured slightly more than the drain has reached (clock
+    // skew on phones). The ring takes the measurement as is instead of
+    // treating it as a new phase and sweeping back through the track color.
+    await pumpRing(
+      tester,
+      fraction: 0.87,
+      drainOver: const Duration(seconds: 16),
+    );
+    expectSweep(tester, -0.87 * 2 * math.pi);
+  });
+
   testWidgets('fades a finished phase out through the track color', (
     tester,
   ) async {

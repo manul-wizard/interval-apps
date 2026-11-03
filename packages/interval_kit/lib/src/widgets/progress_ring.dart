@@ -123,7 +123,13 @@ class _ProgressRingState extends State<ProgressRing>
 
   void _sync() {
     final drainOver = widget.drainOver;
-    if (widget.remainingFraction - _shown > 0.001) {
+    // Only a phase change or a reset jumps back up, and they always start
+    // essentially full. A fresher measurement that sits between the drain
+    // and the real remaining time (clock skew on phones) must snap, never
+    // sweep back through the track color.
+    final restarted = widget.remainingFraction - _shown > 0.001;
+    final startsFull = widget.remainingFraction > 0.9;
+    if (restarted && startsFull) {
       _fill.stop();
       _drain.stop();
       if (drainOver != null && drainOver > Duration.zero) {
