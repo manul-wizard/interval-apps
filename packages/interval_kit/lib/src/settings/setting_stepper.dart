@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../l10n/generated/kit_localizations.dart';
+import '../theme/interval_colors.dart';
 import '../widgets/value_stepper.dart';
 import 'app_language.dart';
 import 'int_range.dart';
@@ -85,12 +86,18 @@ class VibrationStepper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = KitLocalizations.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    final colors = IntervalColors.of(context);
     const strengths = VibrationStrength.values;
     final index = value.index;
 
     return ValueStepper(
       label: l10n.vibration,
       value: value.label(l10n),
+      valueStyle: textTheme.headlineSmall?.copyWith(
+        fontWeight: FontWeight.w700,
+        color: colors.ink,
+      ),
       decrementIcon: Icons.arrow_circle_left_outlined,
       incrementIcon: Icons.arrow_circle_right_outlined,
       decrementLabel: index > 0 ? strengths[index - 1].label(l10n) : null,

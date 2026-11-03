@@ -19,6 +19,7 @@ class ValueStepper extends StatelessWidget {
     this.incrementIcon = Icons.add_circle_outline,
     this.decrementLabel,
     this.incrementLabel,
+    this.valueStyle,
     super.key,
   });
 
@@ -35,6 +36,9 @@ class ValueStepper extends StatelessWidget {
   /// Screen-reader labels for the buttons.
   final String? decrementLabel;
   final String? incrementLabel;
+
+  /// The text style of [value]; defaults to the big number style.
+  final TextStyle? valueStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -68,10 +72,12 @@ class ValueStepper extends StatelessWidget {
                     fit: BoxFit.scaleDown,
                     child: Text(
                       value,
-                      style: textTheme.headlineLarge?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: colors.ink,
-                      ),
+                      style:
+                          valueStyle ??
+                          textTheme.headlineLarge?.copyWith(
+                            fontWeight: FontWeight.w700,
+                            color: colors.ink,
+                          ),
                     ),
                   ),
                 ),
