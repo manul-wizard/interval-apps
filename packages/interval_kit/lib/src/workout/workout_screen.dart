@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:interval_core/interval_core.dart';
 
 import '../l10n/generated/kit_localizations.dart';
@@ -104,7 +105,10 @@ class WorkoutScreen extends StatelessWidget {
                         : controller.status == TimerStatus.paused
                         ? l10n.resume
                         : l10n.start,
-                    onPressed: controller.toggle,
+                    onPressed: () {
+                      HapticFeedback.lightImpact();
+                      controller.toggle();
+                    },
                   ),
                   const Spacer(),
                   FlatTextButton(

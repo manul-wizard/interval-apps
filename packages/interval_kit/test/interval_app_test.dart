@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:interval_kit/interval_kit.dart';
 
@@ -56,6 +57,25 @@ void main() {
 
   Brightness brightnessOnScreen(WidgetTester tester) =>
       Theme.of(tester.element(find.byType(WorkoutScreen))).brightness;
+
+  testWidgets('taps back on the workout button', (tester) async {
+    final haptics = <String>[];
+    final messenger = tester.binding.defaultBinaryMessenger;
+    messenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
+      if (call.method == 'HapticFeedback.vibrate') haptics.add(call.method);
+      return null;
+    });
+    addTearDown(
+      () => messenger.setMockMethodCallHandler(SystemChannels.platform, null),
+    );
+
+    await tester.pumpWidget(app());
+    await tester.pump();
+    await tester.tap(find.text('START'));
+    await tester.pump();
+
+    expect(haptics, ['HapticFeedback.vibrate']);
+  });
 
   testWidgets('disables reset while the workout is at its beginning', (
     tester,
