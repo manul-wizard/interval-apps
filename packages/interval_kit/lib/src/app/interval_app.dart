@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:interval_core/interval_core.dart';
@@ -6,6 +8,7 @@ import '../audio/cue_player.dart';
 import '../l10n/generated/kit_localizations.dart';
 import '../settings/app_language.dart';
 import '../settings/vibration_strength.dart';
+import '../theme/interval_colors.dart';
 import '../theme/interval_theme.dart';
 import '../workout/keep_screen_on.dart';
 import '../workout/workout_controller.dart';
@@ -68,7 +71,8 @@ class IntervalApp<S> extends StatefulWidget {
   State<IntervalApp<S>> createState() => _IntervalAppState<S>();
 }
 
-class _IntervalAppState<S> extends State<IntervalApp<S>> {
+class _IntervalAppState<S> extends State<IntervalApp<S>>
+    with TickerProviderStateMixin {
   late final WorkoutController _workout = WorkoutController(
     plan: widget.planOf(widget.settings.value),
     cues: widget.cues,
@@ -76,12 +80,46 @@ class _IntervalAppState<S> extends State<IntervalApp<S>> {
   );
   VoidCallback? _detach;
 
+  /// Finds the theme toggle for the flood transition.
+  final GlobalKey _themeButtonKey = GlobalKey();
+
+  // The theme floods in from the toggle button: a disk of the incoming
+  // background grows over the old screen, the theme swaps underneath at
+  // full cover, and the disk dissolves to reveal the new one. Two
+  // controllers — the swap starts from the growth's own completion, which
+  // a single controller would not survive.
+  late final AnimationController _flood = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 350),
+  );
+  late final AnimationController _dissolve = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 250),
+  );
+  Offset _floodOrigin = Offset.zero;
+  Color _floodColor = Colors.black;
+  double _floodRadius = 0;
+  ThemeMode? _pendingTheme;
+  var _switchingTheme = false;
+
   @override
   void initState() {
     super.initState();
     widget.settings.addListener(_onSettingsChanged);
     _detach = widget.attach?.call(_workout);
+    _flood
+      ..addListener(_refresh)
+      ..addStatusListener((status) {
+        if (status == AnimationStatus.completed) _swapThemeUnderCover();
+      });
+    _dissolve.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        setState(() => _switchingTheme = false);
+      }
+    });
   }
+
+  void _refresh() => setState(() {});
 
   void _onSettingsChanged() {
     final plan = widget.planOf(widget.settings.value);
@@ -92,20 +130,58 @@ class _IntervalAppState<S> extends State<IntervalApp<S>> {
 
   @override
   void dispose() {
+    _flood.dispose();
+    _dissolve.dispose();
     widget.settings.removeListener(_onSettingsChanged);
     _detach?.call();
     _workout.dispose();
     super.dispose();
   }
 
-  /// Switches to the opposite of the theme on screen. From then on the
-  /// choice is kept instead of following the device.
+  /// The theme floods in from the toggle button: a disk of the incoming
+  /// background grows over the current screen; at full cover the theme
+  /// swaps underneath and the disk dissolves away.
   void _toggleTheme(BuildContext context) {
+    if (_switchingTheme) return;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    widget.settings.value = widget.withThemeMode(
-      widget.settings.value,
-      isDark ? ThemeMode.light : ThemeMode.dark,
-    );
+    final size = MediaQuery.of(context).size;
+    final button = _themeButtonKey.currentContext?.findRenderObject();
+    final center = button is RenderBox
+        ? button.localToGlobal(button.size.center(Offset.zero))
+        : size.center(Offset.zero);
+    _pendingTheme = isDark ? ThemeMode.light : ThemeMode.dark;
+    setState(() {
+      _switchingTheme = true;
+      _floodOrigin = center;
+      _floodColor = isDark
+          ? IntervalColors.light.background
+          : IntervalColors.dark.background;
+      _floodRadius = _coverRadius(center, size);
+    });
+    _flood.forward(from: 0);
+  }
+
+  static double _coverRadius(Offset origin, Size size) {
+    double farthest = 0;
+    for (final corner in [
+      Offset.zero,
+      size.topRight(Offset.zero),
+      size.bottomLeft(Offset.zero),
+      size.bottomRight(Offset.zero),
+    ]) {
+      farthest = math.max(farthest, (corner - origin).distance);
+    }
+    return farthest;
+  }
+
+  /// The disk covers the screen: swap the theme underneath and dissolve
+  /// the cover away.
+  void _swapThemeUnderCover() {
+    final next = _pendingTheme;
+    if (next == null) return;
+    widget.settings.value = widget.withThemeMode(widget.settings.value, next);
+    _pendingTheme = null;
+    _dissolve.forward(from: 0);
   }
 
   @override
@@ -117,14 +193,36 @@ class _IntervalAppState<S> extends State<IntervalApp<S>> {
       theme: buildIntervalTheme(),
       darkTheme: buildIntervalTheme(brightness: Brightness.dark),
       themeMode: widget.themeModeOf(settings),
+      // The flood transition replaces the theme animation.
+      themeAnimationDuration: Duration.zero,
       // Without an app bar on the main screen, the status bar icons have
       // to be told to match the theme.
-      builder: (context, child) => AnnotatedRegion(
-        value: Theme.of(context).brightness == Brightness.dark
-            ? SystemUiOverlayStyle.light
-            : SystemUiOverlayStyle.dark,
-        child: child!,
-      ),
+      builder: (context, child) {
+        final app = AnnotatedRegion(
+          value: Theme.of(context).brightness == Brightness.dark
+              ? SystemUiOverlayStyle.light
+              : SystemUiOverlayStyle.dark,
+          child: child!,
+        );
+        if (!_switchingTheme) return app;
+        return Stack(
+          children: [
+            app,
+            Positioned.fill(
+              child: FadeTransition(
+                opacity: Tween<double>(begin: 1, end: 0).animate(_dissolve),
+                child: ClipPath(
+                  clipper: _DiskClipper(
+                    _floodOrigin,
+                    _floodRadius * _flood.value,
+                  ),
+                  child: ColoredBox(color: _floodColor),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
       locale: widget.languageOf(settings).locale,
       supportedLocales: widget.supportedLocales,
       localizationsDelegates: [
@@ -139,9 +237,26 @@ class _IntervalAppState<S> extends State<IntervalApp<S>> {
           onOpenSettings: () => Navigator.of(context)
               .push(MaterialPageRoute<void>(builder: widget.settingsBuilder)),
           onToggleTheme: () => _toggleTheme(context),
+          themeButtonKey: _themeButtonKey,
           vibration: widget.vibrationOf(settings),
         ),
       ),
     ),
   );
+}
+
+/// The growing disk of the theme flood transition.
+class _DiskClipper extends CustomClipper<Path> {
+  const _DiskClipper(this.origin, this.radius);
+
+  final Offset origin;
+  final double radius;
+
+  @override
+  Path getClip(Size size) =>
+      Path()..addOval(Rect.fromCircle(center: origin, radius: radius));
+
+  @override
+  bool shouldReclip(_DiskClipper oldClipper) =>
+      oldClipper.origin != origin || oldClipper.radius != radius;
 }

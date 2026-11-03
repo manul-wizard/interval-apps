@@ -172,6 +172,21 @@ void main() {
     expect(find.text('STOP'), findsOneWidget);
   });
 
+  testWidgets('floods the theme in from the toggle button', (tester) async {
+    tester.platformDispatcher.platformBrightnessTestValue = Brightness.light;
+    addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
+    final settings = ValueNotifier(ThemeMode.system);
+
+    await tester.pumpWidget(app(settings: settings));
+    await tester.tap(find.byTooltip('Dark theme'));
+    await tester.pump(const Duration(milliseconds: 100));
+    // Mid-flood the theme has not swapped yet.
+    expect(settings.value, ThemeMode.system);
+
+    await tester.pumpAndSettle();
+    expect(settings.value, ThemeMode.dark);
+  });
+
   testWidgets('follows the device theme until the user picks one', (
     tester,
   ) async {

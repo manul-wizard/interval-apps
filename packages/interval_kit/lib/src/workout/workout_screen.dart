@@ -20,6 +20,7 @@ class WorkoutScreen extends StatelessWidget {
     required this.formatTime,
     required this.onOpenSettings,
     this.onToggleTheme,
+    this.themeButtonKey,
     this.vibration = VibrationStrength.medium,
     super.key,
   });
@@ -32,6 +33,9 @@ class WorkoutScreen extends StatelessWidget {
   /// Switches between the light and the dark theme; the button is hidden
   /// when it is null.
   final VoidCallback? onToggleTheme;
+
+  /// Finds the theme toggle for the theme flood transition.
+  final GlobalKey? themeButtonKey;
 
   /// How strongly the start/stop button vibrates.
   final VibrationStrength vibration;
@@ -63,6 +67,7 @@ class WorkoutScreen extends StatelessWidget {
                     children: [
                       if (onToggleTheme case final onToggleTheme?)
                         IconButton(
+                          key: themeButtonKey,
                           icon: Icon(
                             isDark
                                 ? Icons.light_mode_outlined
