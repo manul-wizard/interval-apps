@@ -31,4 +31,13 @@ void main() {
     await store.save(settings.copyWith(themeMode: ThemeMode.system));
     expect((await reopen()).themeMode, ThemeMode.system);
   });
+
+  test('vibrates by default and keeps the choice to turn it off', () async {
+    final store = await SettingsStore.open();
+    final settings = store.load(deviceLocales: const [Locale('en')]);
+    expect(settings.vibration, isTrue);
+
+    await store.save(settings.copyWith(vibration: false));
+    expect((await reopen()).vibration, isFalse);
+  });
 }

@@ -62,6 +62,33 @@ void main() {
     expect(find.text('0/9'), findsOneWidget);
   });
 
+  testWidgets('turns vibration off from the settings', (tester) async {
+    await pumpApp(tester);
+    expect(settings.value.vibration, isTrue);
+
+    await tester.tap(find.byTooltip('Settings'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(Switch));
+    await tester.pumpAndSettle();
+
+    expect(settings.value.vibration, isFalse);
+  });
+
+  testWidgets('settings fit a small screen', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(360, 640));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await pumpApp(tester);
+
+    await tester.tap(find.byTooltip('Settings'));
+    await tester.pumpAndSettle();
+    // Fling through the whole list; any layout overflow would throw.
+    await tester.fling(find.byType(ListView), const Offset(0, -300), 1000);
+    await tester.pumpAndSettle();
+
+    expect(find.text('SETTINGS'), findsOneWidget);
+  });
+
   testWidgets('switches the language', (tester) async {
     await pumpApp(tester);
 

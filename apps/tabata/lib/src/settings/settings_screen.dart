@@ -31,6 +31,11 @@ class SettingsScreen extends StatelessWidget {
             value: current.language,
             onChanged: (value) => _update((s) => s.copyWith(language: value)),
           ),
+          SettingSwitch(
+            label: KitLocalizations.of(context).vibration,
+            value: current.vibration,
+            onChanged: (value) => _update((s) => s.copyWith(vibration: value)),
+          ),
           IntSettingStepper(
             label: l10n.settingRounds,
             value: current.rounds,
