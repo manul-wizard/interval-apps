@@ -19,6 +19,7 @@ export 'src/widgets/pill_button.dart';
 export 'src/widgets/press_scale.dart';
 export 'src/widgets/progress_ring.dart';
 export 'src/widgets/setting_link.dart';
+export 'src/widgets/setting_switch.dart';
 export 'src/widgets/settings_page.dart';
 export 'src/widgets/timer_face.dart';
 export 'src/widgets/value_stepper.dart';

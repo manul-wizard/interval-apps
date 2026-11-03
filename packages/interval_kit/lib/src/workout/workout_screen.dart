@@ -20,6 +20,7 @@ class WorkoutScreen extends StatelessWidget {
     required this.formatTime,
     required this.onOpenSettings,
     this.onToggleTheme,
+    this.vibrationEnabled = true,
     super.key,
   });
 
@@ -31,6 +32,9 @@ class WorkoutScreen extends StatelessWidget {
   /// Switches between the light and the dark theme; the button is hidden
   /// when it is null.
   final VoidCallback? onToggleTheme;
+
+  /// Whether the start/stop button vibrates under the finger.
+  final bool vibrationEnabled;
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +110,7 @@ class WorkoutScreen extends StatelessWidget {
                         ? l10n.resume
                         : l10n.start,
                     onPressed: () {
-                      HapticFeedback.lightImpact();
+                      if (vibrationEnabled) HapticFeedback.lightImpact();
                       controller.toggle();
                     },
                   ),

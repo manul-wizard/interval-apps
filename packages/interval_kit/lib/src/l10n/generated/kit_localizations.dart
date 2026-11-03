@@ -140,6 +140,12 @@ abstract class KitLocalizations {
   /// **'Language'**
   String get language;
 
+  /// Label of the setting that turns the button vibration on or off.
+  ///
+  /// In en, this message translates to:
+  /// **'Vibration'**
+  String get vibration;
+
   /// Screen-reader label of a minus button.
   ///
   /// In en, this message translates to:

@@ -14,6 +14,8 @@
   "@settings": { "description": "Title of the settings screen and its button." },
   "language": "Language",
   "@language": { "description": "Label of the language setting." },
+  "vibration": "Vibration",
+  "@vibration": { "description": "Label of the setting that turns the button vibration on or off." },
   "decrease": "Decrease",
   "@decrease": { "description": "Screen-reader label of a minus button." },
   "increase": "Increase",

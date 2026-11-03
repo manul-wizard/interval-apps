@@ -35,6 +35,7 @@ class IntervalApp<S> extends StatefulWidget {
     required this.phaseLabel,
     required this.formatTime,
     required this.settingsBuilder,
+    required this.vibrationOf,
     this.keepScreenOn = keepScreenOnWithWakelock,
     this.attach,
     super.key,
@@ -56,6 +57,9 @@ class IntervalApp<S> extends StatefulWidget {
   final String Function(BuildContext context, Phase phase) phaseLabel;
   final String Function(TimerSnapshot snapshot) formatTime;
   final WidgetBuilder settingsBuilder;
+
+  /// Whether the workout button vibrates, from the [settings].
+  final bool Function(S settings) vibrationOf;
   final KeepScreenOn keepScreenOn;
   final WorkoutAttachment? attach;
 
@@ -134,6 +138,7 @@ class _IntervalAppState<S> extends State<IntervalApp<S>> {
           onOpenSettings: () => Navigator.of(context)
               .push(MaterialPageRoute<void>(builder: widget.settingsBuilder)),
           onToggleTheme: () => _toggleTheme(context),
+          vibrationEnabled: widget.vibrationOf(settings),
         ),
       ),
     ),
