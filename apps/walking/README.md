@@ -6,6 +6,8 @@ time to put the phone away, and a sound marks every change of pace.
 
 | Setting | Default | Range |
 |---|---|---|
+| Language | device | English, Russian |
+| Vibration | medium | off, medium, strong |
 | Rounds | 5 | 1–20 |
 | Fast | 3 min | 1–10 min |
 | Slow | 3 min | 1–10 min |
