@@ -82,22 +82,20 @@ class WorkoutScreen extends StatelessWidget {
                     ],
                   ),
                   const Spacer(),
-                  // Pausing presses the face in, like the button under the
-                  // finger; resuming pops it back with a small bounce.
-                  _FacePress(
-                    pressed: paused,
-                    child: SizedBox.square(
-                      dimension: _ringDiameter(constraints),
-                      child: TimerFace(
-                        time: formatTime(snapshot),
-                        caption:
-                            '${snapshot.phase.round}/${snapshot.plan.rounds}',
-                        remainingFraction: snapshot.remainingFraction,
-                        color: running
-                            ? colors.forIntensity(snapshot.phase.intensity)
-                            : colors.idle,
-                        drainOver: running ? snapshot.remainingInPhase : null,
-                      ),
+                  SizedBox.square(
+                    dimension: _ringDiameter(constraints),
+                    child: TimerFace(
+                      time: formatTime(snapshot),
+                      caption:
+                          '${snapshot.phase.round}/${snapshot.plan.rounds}',
+                      remainingFraction: snapshot.remainingFraction,
+                      color: running
+                          ? colors.forIntensity(snapshot.phase.intensity)
+                          : colors.idle,
+                      drainOver: running ? snapshot.remainingInPhase : null,
+                      // Pausing presses the ring in, like the button under
+                      // the finger; the time on top stays put.
+                      pressed: paused,
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -141,65 +139,5 @@ class WorkoutScreen extends StatelessWidget {
   static double _ringDiameter(BoxConstraints constraints) => math.min(
     400,
     math.min(constraints.maxWidth * 0.7, constraints.maxHeight * 0.45),
-  );
-}
-
-/// Scales [child] down while [pressed] — the timer face pressing in on
-/// pause — and springs it back with a small bounce when released.
-class _FacePress extends StatefulWidget {
-  const _FacePress({required this.pressed, required this.child});
-
-  final bool pressed;
-  final Widget child;
-
-  @override
-  State<_FacePress> createState() => _FacePressState();
-}
-
-class _FacePressState extends State<_FacePress>
-    with SingleTickerProviderStateMixin {
-  static const _pressedScale = 0.96;
-  static const _pressInDuration = Duration(milliseconds: 150);
-  static const _releaseDuration = Duration(milliseconds: 350);
-
-  late final AnimationController _scale = AnimationController(
-    vsync: this,
-    value: 1,
-  );
-
-  @override
-  void didUpdateWidget(_FacePress oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.pressed != widget.pressed) {
-      // animateTo starts from the current value, so rapid toggles just
-      // reverse course instead of jumping.
-      if (widget.pressed) {
-        _scale.animateTo(
-          _pressedScale,
-          duration: _pressInDuration,
-          curve: Curves.easeOut,
-        );
-      } else {
-        _scale.animateTo(
-          1,
-          duration: _releaseDuration,
-          curve: Curves.easeOutBack,
-        );
-      }
-    }
-  }
-
-  @override
-  void dispose() {
-    _scale.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) => AnimatedBuilder(
-    animation: _scale,
-    builder: (context, child) =>
-        Transform.scale(scale: _scale.value, child: child),
-    child: widget.child,
   );
 }
