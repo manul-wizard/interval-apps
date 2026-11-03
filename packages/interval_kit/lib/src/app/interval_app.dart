@@ -158,6 +158,9 @@ class _IntervalAppState<S> extends State<IntervalApp<S>>
           : IntervalColors.dark.background;
       _floodRadius = _coverRadius(center, size);
     });
+    // A finished dissolve leaves the controller at 1, which would make the
+    // next cover transparent from the start.
+    _dissolve.value = 0;
     _flood.forward(from: 0);
   }
 

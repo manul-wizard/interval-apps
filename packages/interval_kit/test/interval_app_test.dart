@@ -178,13 +178,25 @@ void main() {
     final settings = ValueNotifier(ThemeMode.system);
 
     await tester.pumpWidget(app(settings: settings));
-    await tester.tap(find.byTooltip('Dark theme'));
-    await tester.pump(const Duration(milliseconds: 100));
-    // Mid-flood the theme has not swapped yet.
-    expect(settings.value, ThemeMode.system);
+    for (final (tooltip, expected) in [
+      ('Dark theme', ThemeMode.dark),
+      ('Light theme', ThemeMode.light),
+    ]) {
+      await tester.tap(find.byTooltip(tooltip));
+      await tester.pump(const Duration(milliseconds: 100));
+      // Mid-flood the theme has not swapped yet and the cover is opaque.
+      expect(settings.value, isNot(expected));
+      final fade = tester.widget<FadeTransition>(
+        find.ancestor(
+          of: find.byType(ClipPath),
+          matching: find.byType(FadeTransition),
+        ),
+      );
+      expect(fade.opacity.value, greaterThan(0.9));
 
-    await tester.pumpAndSettle();
-    expect(settings.value, ThemeMode.dark);
+      await tester.pumpAndSettle();
+      expect(settings.value, expected);
+    }
   });
 
   testWidgets('follows the device theme until the user picks one', (
