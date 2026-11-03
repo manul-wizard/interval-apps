@@ -140,7 +140,7 @@ abstract class KitLocalizations {
   /// **'Language'**
   String get language;
 
-  /// Label of the vibration strength setting.
+  /// Label of the setting for the vibration cues at phase changes.
   ///
   /// In en, this message translates to:
   /// **'Vibration'**

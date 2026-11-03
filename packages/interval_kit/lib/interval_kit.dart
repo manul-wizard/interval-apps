@@ -8,6 +8,7 @@ export 'src/app/interval_app.dart';
 export 'src/audio/asset_cue_player.dart';
 export 'src/audio/cue.dart';
 export 'src/audio/cue_player.dart';
+export 'src/haptics/haptic_player.dart';
 export 'src/l10n/generated/kit_localizations.dart';
 export 'src/settings/app_language.dart';
 export 'src/settings/int_range.dart';

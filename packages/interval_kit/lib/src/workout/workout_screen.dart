@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:interval_core/interval_core.dart';
 
 import '../l10n/generated/kit_localizations.dart';
-import '../settings/vibration_strength.dart';
 import '../theme/interval_colors.dart';
 import '../widgets/pill_button.dart';
 import '../widgets/timer_face.dart';
@@ -21,7 +20,6 @@ class WorkoutScreen extends StatelessWidget {
     required this.onOpenSettings,
     this.onToggleTheme,
     this.themeButtonKey,
-    this.vibration = VibrationStrength.medium,
     super.key,
   });
 
@@ -36,9 +34,6 @@ class WorkoutScreen extends StatelessWidget {
 
   /// Finds the theme toggle for the theme flood transition.
   final GlobalKey? themeButtonKey;
-
-  /// How strongly the start/stop button vibrates.
-  final VibrationStrength vibration;
 
   @override
   Widget build(BuildContext context) {
@@ -118,10 +113,7 @@ class WorkoutScreen extends StatelessWidget {
                         : controller.status == TimerStatus.paused
                         ? l10n.resume
                         : l10n.start,
-                    onPressed: () {
-                      vibration.tap();
-                      controller.toggle();
-                    },
+                    onPressed: controller.toggle,
                   ),
                   const Spacer(),
                   FlatTextButton(

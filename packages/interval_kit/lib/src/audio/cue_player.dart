@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 
+import '../haptics/haptic_player.dart';
 import 'cue.dart';
 
 /// Plays [Cue]s.
@@ -27,6 +28,18 @@ final class RecordingCuePlayer implements CuePlayer {
 
   @override
   Future<void> play(Cue cue) async => played.add(cue);
+
+  @override
+  Future<void> dispose() async {}
+}
+
+/// Records played haptic cues, for tests.
+@visibleForTesting
+final class RecordingHapticPlayer implements HapticPlayer {
+  final played = <HapticCue>[];
+
+  @override
+  Future<void> play(HapticCue cue) async => played.add(cue);
 
   @override
   Future<void> dispose() async {}

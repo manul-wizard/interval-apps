@@ -5,17 +5,19 @@ import 'package:interval_core/interval_core.dart';
 
 import '../audio/cue.dart';
 import '../audio/cue_player.dart';
+import '../haptics/haptic_player.dart';
 
 /// Turns keeping the screen on during a workout on or off.
 typedef KeepScreenOn = Future<void> Function({required bool enabled});
 
 /// Drives one workout screen: runs the [IntervalTimer], plays the cues and
-/// keeps the screen awake while the timer is running.
+/// the haptics, and keeps the screen awake while the timer is running.
 class WorkoutController extends ChangeNotifier {
   WorkoutController({
     required WorkoutPlan plan,
     required this._cues,
     required this._keepScreenOn,
+    this.haptics = const SilentHapticPlayer(),
     MonotonicClock? clock,
   }) : _timer = IntervalTimer(plan, clock: clock) {
     _snapshot = _timer.snapshot;
@@ -27,6 +29,9 @@ class WorkoutController extends ChangeNotifier {
 
   final CuePlayer _cues;
   final KeepScreenOn _keepScreenOn;
+
+  /// The vibration for phase changes; its strength follows the setting.
+  final HapticPlayer haptics;
   final IntervalTimer _timer;
   late final List<StreamSubscription<Object>> _subscriptions;
   late TimerSnapshot _snapshot;
@@ -69,8 +74,10 @@ class WorkoutController extends ChangeNotifier {
         if (Cue.forPhase(phase) case final cue?) {
           unawaited(_cues.play(cue));
         }
+        unawaited(haptics.play(HapticCue.forPhase(phase)));
       case WorkoutFinished():
         unawaited(_cues.play(Cue.finish));
+        unawaited(haptics.play(HapticCue.finished));
         _timer.reset();
         _syncScreen();
     }
@@ -83,6 +90,7 @@ class WorkoutController extends ChangeNotifier {
     for (final subscription in _subscriptions) {
       unawaited(subscription.cancel());
     }
+    unawaited(haptics.dispose());
     unawaited(_timer.dispose());
     unawaited(_keepScreenOn(enabled: false));
     super.dispose();

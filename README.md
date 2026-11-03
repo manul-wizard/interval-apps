@@ -39,7 +39,7 @@ Interval walking: 3 minutes fast, 3 minutes slow, 5 times — a 30-minute sessio
 
 ### Both apps
 
-Both apps speak English and Russian, play a sound when the phase changes, keep the screen on while the timer runs and come in a light and a dark theme that follows the phone until you pick one. The start button taps back with a vibration you can turn down or off in the settings.
+Both apps speak English and Russian, play a sound when the phase changes, keep the screen on while the timer runs and come in a light and a dark theme that follows the phone until you pick one. Phase changes also tap back with a vibration you can turn down or off in the settings.
 
 *APK preview* links point to [test builds of the latest `main`](https://github.com/manul-wizard/interval-apps/releases/tag/preview). They install next to the store versions as separate "Preview" apps and update each other.
 

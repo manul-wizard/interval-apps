@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -5,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:interval_core/interval_core.dart';
 
 import '../audio/cue_player.dart';
+import '../haptics/haptic_player.dart';
 import '../l10n/generated/kit_localizations.dart';
 import '../settings/app_language.dart';
 import '../settings/vibration_strength.dart';
@@ -62,7 +64,7 @@ class IntervalApp<S> extends StatefulWidget {
   final String Function(TimerSnapshot snapshot) formatTime;
   final WidgetBuilder settingsBuilder;
 
-  /// The vibration strength of the workout button, from the [settings].
+  /// The vibration strength of the transition cues, from the [settings].
   final VibrationStrength Function(S settings) vibrationOf;
   final KeepScreenOn keepScreenOn;
   final WorkoutAttachment? attach;
@@ -73,10 +75,16 @@ class IntervalApp<S> extends StatefulWidget {
 
 class _IntervalAppState<S> extends State<IntervalApp<S>>
     with TickerProviderStateMixin {
+  /// Plays the transition vibrations; its strength follows the settings.
+  late final SystemHapticPlayer _haptics = SystemHapticPlayer(
+    strength: widget.vibrationOf(widget.settings.value),
+  );
+
   late final WorkoutController _workout = WorkoutController(
     plan: widget.planOf(widget.settings.value),
     cues: widget.cues,
     keepScreenOn: widget.keepScreenOn,
+    haptics: _haptics,
   );
   VoidCallback? _detach;
 
@@ -122,6 +130,7 @@ class _IntervalAppState<S> extends State<IntervalApp<S>>
   void _refresh() => setState(() {});
 
   void _onSettingsChanged() {
+    _haptics.strength = widget.vibrationOf(widget.settings.value);
     final plan = widget.planOf(widget.settings.value);
     if (plan != _workout.plan) {
       _workout.replacePlan(plan);
@@ -134,6 +143,7 @@ class _IntervalAppState<S> extends State<IntervalApp<S>>
     _dissolve.dispose();
     widget.settings.removeListener(_onSettingsChanged);
     _detach?.call();
+    unawaited(_haptics.dispose());
     _workout.dispose();
     super.dispose();
   }
@@ -241,7 +251,6 @@ class _IntervalAppState<S> extends State<IntervalApp<S>>
               .push(MaterialPageRoute<void>(builder: widget.settingsBuilder)),
           onToggleTheme: () => _toggleTheme(context),
           themeButtonKey: _themeButtonKey,
-          vibration: widget.vibrationOf(settings),
         ),
       ),
     ),

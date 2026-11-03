@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:interval_kit/interval_kit.dart';
 
@@ -12,27 +11,24 @@ void main() {
   );
 
   // The theme is the only setting these tests need.
-  Widget app({
-    ValueNotifier<ThemeMode>? settings,
-    WorkoutAttachment? attach,
-    VibrationStrength vibration = VibrationStrength.medium,
-  }) => IntervalApp(
-    settings: settings ?? ValueNotifier(ThemeMode.system),
-    planOf: (_) => plan,
-    languageOf: (_) => AppLanguage.english,
-    themeModeOf: (themeMode) => themeMode,
-    withThemeMode: (_, themeMode) => themeMode,
-    vibrationOf: (_) => vibration,
-    cues: const SilentCuePlayer(),
-    keepScreenOn: ({required enabled}) async {},
-    onGenerateTitle: (_) => 'Test',
-    localizationsDelegates: const [],
-    supportedLocales: const [Locale('en')],
-    phaseLabel: (_, phase) => phase.intensity.name,
-    formatTime: (snapshot) => '${snapshot.remainingSeconds}',
-    settingsBuilder: (_) => const SizedBox(),
-    attach: attach,
-  );
+  Widget app({ValueNotifier<ThemeMode>? settings, WorkoutAttachment? attach}) =>
+      IntervalApp(
+        settings: settings ?? ValueNotifier(ThemeMode.system),
+        planOf: (_) => plan,
+        languageOf: (_) => AppLanguage.english,
+        themeModeOf: (themeMode) => themeMode,
+        withThemeMode: (_, themeMode) => themeMode,
+        vibrationOf: (_) => VibrationStrength.medium,
+        cues: const SilentCuePlayer(),
+        keepScreenOn: ({required enabled}) async {},
+        onGenerateTitle: (_) => 'Test',
+        localizationsDelegates: const [],
+        supportedLocales: const [Locale('en')],
+        phaseLabel: (_, phase) => phase.intensity.name,
+        formatTime: (snapshot) => '${snapshot.remainingSeconds}',
+        settingsBuilder: (_) => const SizedBox(),
+        attach: attach,
+      );
 
   testWidgets('attaches to the workout once and detaches on dispose', (
     tester,
@@ -61,44 +57,6 @@ void main() {
 
   Brightness brightnessOnScreen(WidgetTester tester) =>
       Theme.of(tester.element(find.byType(WorkoutScreen))).brightness;
-
-  testWidgets('taps back on the workout button', (tester) async {
-    final haptics = <String>[];
-    final messenger = tester.binding.defaultBinaryMessenger;
-    messenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
-      if (call.method == 'HapticFeedback.vibrate') haptics.add(call.method);
-      return null;
-    });
-    addTearDown(
-      () => messenger.setMockMethodCallHandler(SystemChannels.platform, null),
-    );
-
-    await tester.pumpWidget(app());
-    await tester.pump();
-    await tester.tap(find.text('START'));
-    await tester.pump();
-
-    expect(haptics, ['HapticFeedback.vibrate']);
-  });
-
-  testWidgets('stays silent when vibration is off', (tester) async {
-    final haptics = <String>[];
-    final messenger = tester.binding.defaultBinaryMessenger;
-    messenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
-      if (call.method == 'HapticFeedback.vibrate') haptics.add(call.method);
-      return null;
-    });
-    addTearDown(
-      () => messenger.setMockMethodCallHandler(SystemChannels.platform, null),
-    );
-
-    await tester.pumpWidget(app(vibration: VibrationStrength.off));
-    await tester.pump();
-    await tester.tap(find.text('START'));
-    await tester.pump();
-
-    expect(haptics, isEmpty);
-  });
 
   testWidgets('disables reset while the workout is at its beginning', (
     tester,
