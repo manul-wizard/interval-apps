@@ -57,6 +57,22 @@ void main() {
   Brightness brightnessOnScreen(WidgetTester tester) =>
       Theme.of(tester.element(find.byType(WorkoutScreen))).brightness;
 
+  testWidgets('labels the paused workout Resume', (tester) async {
+    await tester.pumpWidget(app());
+    await tester.pump();
+    expect(find.text('START'), findsOneWidget);
+
+    await tester.tap(find.text('START'));
+    await tester.pump();
+    await tester.tap(find.text('STOP'));
+    await tester.pump();
+    expect(find.text('RESUME'), findsOneWidget);
+
+    await tester.tap(find.text('RESUME'));
+    await tester.pump();
+    expect(find.text('STOP'), findsOneWidget);
+  });
+
   testWidgets('follows the device theme until the user picks one', (
     tester,
   ) async {

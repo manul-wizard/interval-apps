@@ -99,7 +99,11 @@ class WorkoutScreen extends StatelessWidget {
                   ),
                   const Spacer(flex: 2),
                   PillButton(
-                    label: running ? l10n.stop : l10n.start,
+                    label: running
+                        ? l10n.stop
+                        : controller.status == TimerStatus.paused
+                        ? l10n.resume
+                        : l10n.start,
                     onPressed: controller.toggle,
                   ),
                   const Spacer(),

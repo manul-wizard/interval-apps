@@ -16,6 +16,9 @@ class KitLocalizationsEn extends KitLocalizations {
   String get stop => 'Stop';
 
   @override
+  String get resume => 'Resume';
+
+  @override
   String get reset => 'Reset';
 
   @override

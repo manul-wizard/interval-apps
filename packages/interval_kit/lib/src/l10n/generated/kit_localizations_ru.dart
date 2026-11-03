@@ -16,6 +16,9 @@ class KitLocalizationsRu extends KitLocalizations {
   String get stop => 'Стоп';
 
   @override
+  String get resume => 'Продолжить';
+
+  @override
   String get reset => 'Сбросить';
 
   @override

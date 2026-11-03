@@ -1,9 +1,11 @@
 {
   "@@locale": "en",
   "start": "Start",
-  "@start": { "description": "Starts or resumes the workout." },
+  "@start": { "description": "Starts the workout from its beginning." },
   "stop": "Stop",
   "@stop": { "description": "Pauses the running workout." },
+  "resume": "Resume",
+  "@resume": { "description": "Continues the paused workout." },
   "reset": "Reset",
   "@reset": { "description": "Returns the workout to its beginning." },
   "paused": "Pause",

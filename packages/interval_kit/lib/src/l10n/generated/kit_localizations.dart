@@ -98,7 +98,7 @@ abstract class KitLocalizations {
     Locale('ru'),
   ];
 
-  /// Starts or resumes the workout.
+  /// Starts the workout from its beginning.
   ///
   /// In en, this message translates to:
   /// **'Start'**
@@ -109,6 +109,12 @@ abstract class KitLocalizations {
   /// In en, this message translates to:
   /// **'Stop'**
   String get stop;
+
+  /// Continues the paused workout.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume'**
+  String get resume;
 
   /// Returns the workout to its beginning.
   ///
