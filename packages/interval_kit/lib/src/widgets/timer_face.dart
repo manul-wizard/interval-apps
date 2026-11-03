@@ -53,10 +53,12 @@ class _TimerFaceState extends State<TimerFace>
           curve: Curves.easeOut,
         );
       } else {
+        // No overshoot: a bounce reads as a glitch next to the countdown
+        // starting to drain.
         _ringScale.animateTo(
           1,
           duration: _releaseDuration,
-          curve: Curves.easeOutBack,
+          curve: Curves.easeOutCubic,
         );
       }
     }
