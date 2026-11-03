@@ -11,6 +11,7 @@ final class SettingsStore {
 
   static const _language = 'language';
   static const _theme = 'theme';
+  static const _vibration = 'vibration';
   static const _rounds = 'rounds';
   static const _fast = 'fastMinutes';
   static const _slow = 'slowMinutes';
@@ -18,7 +19,7 @@ final class SettingsStore {
   static Future<SettingsStore> open() async => SettingsStore._(
     await SharedPreferencesWithCache.create(
       cacheOptions: const SharedPreferencesWithCacheOptions(
-        allowList: {_language, _rounds, _fast, _slow, _theme},
+        allowList: {_language, _rounds, _fast, _slow, _theme, _vibration},
       ),
     ),
   );
@@ -36,6 +37,7 @@ final class SettingsStore {
       language: language == null
           ? AppLanguage.fromLocales(deviceLocales)
           : AppLanguage.fromCode(language),
+      vibration: _preferences.getBool(_vibration) ?? defaults.vibration,
       rounds: WalkingSettings.roundsRange.clamp(
         _preferences.getInt(_rounds) ?? defaults.rounds,
       ),
@@ -55,6 +57,7 @@ final class SettingsStore {
         _preferences.setString(_theme, theme)
       else
         _preferences.remove(_theme),
+      _preferences.setBool(_vibration, settings.vibration),
       _preferences.setInt(_rounds, settings.rounds),
       _preferences.setInt(_fast, settings.fastMinutes),
       _preferences.setInt(_slow, settings.slowMinutes),

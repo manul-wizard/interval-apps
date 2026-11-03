@@ -40,6 +40,7 @@ class WalkingApp extends StatelessWidget {
     themeModeOf: (settings) => settings.themeMode,
     withThemeMode: (settings, themeMode) =>
         settings.copyWith(themeMode: themeMode),
+    vibrationOf: (settings) => settings.vibration,
     cues: cues,
     keepScreenOn: keepScreenOn,
     onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,

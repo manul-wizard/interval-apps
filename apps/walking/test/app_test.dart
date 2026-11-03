@@ -8,16 +8,21 @@ import 'package:walking/src/app.dart';
 import 'package:walking/src/settings/walking_settings.dart';
 
 void main() {
-  Future<void> pumpApp(WidgetTester tester, AppLanguage language) async {
+  Future<ValueNotifier<WalkingSettings>> pumpApp(
+    WidgetTester tester,
+    AppLanguage language,
+  ) async {
+    final settings = ValueNotifier(WalkingSettings(language: language));
     await tester.pumpWidget(
       WalkingApp(
-        settings: ValueNotifier(WalkingSettings(language: language)),
+        settings: settings,
         cues: const SilentCuePlayer(),
         version: '1.2.3',
         keepScreenOn: ({required enabled}) async {},
       ),
     );
     await tester.pumpAndSettle();
+    return settings;
   }
 
   testWidgets('starts with a short countdown', (tester) async {
@@ -26,6 +31,51 @@ void main() {
     expect(find.text('0:10'), findsOneWidget);
     expect(find.text('0/5'), findsOneWidget);
     expect(find.text('GET READY'), findsOneWidget);
+  });
+
+  testWidgets('turns vibration off from the settings', (tester) async {
+    final settings = await pumpApp(tester, AppLanguage.english);
+    expect(settings.value.vibration, isTrue);
+
+    await tester.tap(find.byTooltip('Settings'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(Switch));
+    await tester.pumpAndSettle();
+
+    expect(settings.value.vibration, isFalse);
+  });
+
+  testWidgets('settings with playlists fit a small screen', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(360, 640));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    final root = Directory.systemTemp.createTempSync('walking_layout_');
+    addTearDown(() => root.deleteSync(recursive: true));
+    final music = (await tester.runAsync(
+      () async => MusicLibrary.open(root: root),
+    ))!;
+
+    await tester.pumpWidget(
+      WalkingApp(
+        settings: ValueNotifier(
+          const WalkingSettings(language: AppLanguage.english),
+        ),
+        cues: const SilentCuePlayer(),
+        version: '1.2.3',
+        keepScreenOn: ({required enabled}) async {},
+        music: music,
+        createPlayer: RecordingTrackPlayer.new,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip('Settings'));
+    await tester.pumpAndSettle();
+    // Fling through the whole list; any layout overflow would throw.
+    await tester.fling(find.byType(ListView), const Offset(0, -300), 1000);
+    await tester.pumpAndSettle();
+
+    expect(find.text('SETTINGS'), findsOneWidget);
   });
 
   testWidgets('moves on to the fast pace', (tester) async {

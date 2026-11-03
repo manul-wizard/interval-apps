@@ -10,6 +10,7 @@ final class WalkingSettings {
     this.fastMinutes = 3,
     this.slowMinutes = 3,
     this.themeMode = ThemeMode.system,
+    this.vibration = true,
   });
 
   static const roundsRange = IntRange(1, 20);
@@ -27,6 +28,9 @@ final class WalkingSettings {
   /// Light, dark, or [ThemeMode.system] to follow the device.
   final ThemeMode themeMode;
 
+  /// Whether the start/stop button vibrates under the finger.
+  final bool vibration;
+
   /// Rounds of fast then slow walking; the last slow interval is the
   /// cool-down. The defaults give the classic 30-minute session.
   WorkoutPlan toPlan() => WorkoutPlan.intervals(
@@ -42,12 +46,14 @@ final class WalkingSettings {
     int? fastMinutes,
     int? slowMinutes,
     ThemeMode? themeMode,
+    bool? vibration,
   }) => WalkingSettings(
     language: language ?? this.language,
     rounds: rounds ?? this.rounds,
     fastMinutes: fastMinutes ?? this.fastMinutes,
     slowMinutes: slowMinutes ?? this.slowMinutes,
     themeMode: themeMode ?? this.themeMode,
+    vibration: vibration ?? this.vibration,
   );
 
   @override
@@ -57,9 +63,16 @@ final class WalkingSettings {
       other.rounds == rounds &&
       other.fastMinutes == fastMinutes &&
       other.slowMinutes == slowMinutes &&
-      other.themeMode == themeMode;
+      other.themeMode == themeMode &&
+      other.vibration == vibration;
 
   @override
-  int get hashCode =>
-      Object.hash(language, rounds, fastMinutes, slowMinutes, themeMode);
+  int get hashCode => Object.hash(
+    language,
+    rounds,
+    fastMinutes,
+    slowMinutes,
+    themeMode,
+    vibration,
+  );
 }
