@@ -32,12 +32,15 @@ void main() {
     expect((await reopen()).themeMode, ThemeMode.system);
   });
 
-  test('vibrates by default and keeps the choice to turn it off', () async {
+  test('vibrates at medium strength by default and keeps the choice', () async {
     final store = await SettingsStore.open();
     final settings = store.load(deviceLocales: const [Locale('en')]);
-    expect(settings.vibration, isTrue);
+    expect(settings.vibration, VibrationStrength.medium);
 
-    await store.save(settings.copyWith(vibration: false));
-    expect((await reopen()).vibration, isFalse);
+    await store.save(settings.copyWith(vibration: VibrationStrength.off));
+    expect((await reopen()).vibration, VibrationStrength.off);
+
+    await store.save(settings.copyWith(vibration: VibrationStrength.strong));
+    expect((await reopen()).vibration, VibrationStrength.strong);
   });
 }

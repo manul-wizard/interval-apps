@@ -34,6 +34,15 @@ class KitLocalizationsEn extends KitLocalizations {
   String get vibration => 'Vibration';
 
   @override
+  String get vibrationOff => 'Off';
+
+  @override
+  String get vibrationMedium => 'Medium';
+
+  @override
+  String get vibrationStrong => 'Strong';
+
+  @override
   String get decrease => 'Decrease';
 
   @override

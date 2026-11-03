@@ -38,8 +38,7 @@ class SettingsScreen extends StatelessWidget {
             value: current.language,
             onChanged: (value) => _update((s) => s.copyWith(language: value)),
           ),
-          SettingSwitch(
-            label: KitLocalizations.of(context).vibration,
+          VibrationStepper(
             value: current.vibration,
             onChanged: (value) => _update((s) => s.copyWith(vibration: value)),
           ),

@@ -15,7 +15,7 @@ void main() {
   Widget app({
     ValueNotifier<ThemeMode>? settings,
     WorkoutAttachment? attach,
-    bool vibration = true,
+    VibrationStrength vibration = VibrationStrength.medium,
   }) => IntervalApp(
     settings: settings ?? ValueNotifier(ThemeMode.system),
     planOf: (_) => plan,
@@ -92,7 +92,7 @@ void main() {
       () => messenger.setMockMethodCallHandler(SystemChannels.platform, null),
     );
 
-    await tester.pumpWidget(app(vibration: false));
+    await tester.pumpWidget(app(vibration: VibrationStrength.off));
     await tester.pump();
     await tester.tap(find.text('START'));
     await tester.pump();

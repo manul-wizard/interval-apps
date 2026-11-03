@@ -1,10 +1,10 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:interval_core/interval_core.dart';
 
 import '../l10n/generated/kit_localizations.dart';
+import '../settings/vibration_strength.dart';
 import '../theme/interval_colors.dart';
 import '../widgets/pill_button.dart';
 import '../widgets/timer_face.dart';
@@ -20,7 +20,7 @@ class WorkoutScreen extends StatelessWidget {
     required this.formatTime,
     required this.onOpenSettings,
     this.onToggleTheme,
-    this.vibrationEnabled = true,
+    this.vibration = VibrationStrength.medium,
     super.key,
   });
 
@@ -33,8 +33,8 @@ class WorkoutScreen extends StatelessWidget {
   /// when it is null.
   final VoidCallback? onToggleTheme;
 
-  /// Whether the start/stop button vibrates under the finger.
-  final bool vibrationEnabled;
+  /// How strongly the start/stop button vibrates.
+  final VibrationStrength vibration;
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +110,7 @@ class WorkoutScreen extends StatelessWidget {
                         ? l10n.resume
                         : l10n.start,
                     onPressed: () {
-                      if (vibrationEnabled) HapticFeedback.lightImpact();
+                      vibration.tap();
                       controller.toggle();
                     },
                   ),

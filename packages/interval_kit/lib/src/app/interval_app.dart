@@ -5,6 +5,7 @@ import 'package:interval_core/interval_core.dart';
 import '../audio/cue_player.dart';
 import '../l10n/generated/kit_localizations.dart';
 import '../settings/app_language.dart';
+import '../settings/vibration_strength.dart';
 import '../theme/interval_theme.dart';
 import '../workout/keep_screen_on.dart';
 import '../workout/workout_controller.dart';
@@ -58,8 +59,8 @@ class IntervalApp<S> extends StatefulWidget {
   final String Function(TimerSnapshot snapshot) formatTime;
   final WidgetBuilder settingsBuilder;
 
-  /// Whether the workout button vibrates, from the [settings].
-  final bool Function(S settings) vibrationOf;
+  /// The vibration strength of the workout button, from the [settings].
+  final VibrationStrength Function(S settings) vibrationOf;
   final KeepScreenOn keepScreenOn;
   final WorkoutAttachment? attach;
 
@@ -138,7 +139,7 @@ class _IntervalAppState<S> extends State<IntervalApp<S>> {
           onOpenSettings: () => Navigator.of(context)
               .push(MaterialPageRoute<void>(builder: widget.settingsBuilder)),
           onToggleTheme: () => _toggleTheme(context),
-          vibrationEnabled: widget.vibrationOf(settings),
+          vibration: widget.vibrationOf(settings),
         ),
       ),
     ),

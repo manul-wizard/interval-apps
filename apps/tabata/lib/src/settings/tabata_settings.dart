@@ -10,7 +10,7 @@ final class TabataSettings {
     this.workSeconds = 20,
     this.restSeconds = 10,
     this.themeMode = ThemeMode.system,
-    this.vibration = true,
+    this.vibration = VibrationStrength.medium,
   });
 
   static const roundsRange = IntRange(2, 99);
@@ -25,8 +25,8 @@ final class TabataSettings {
   /// Light, dark, or [ThemeMode.system] to follow the device.
   final ThemeMode themeMode;
 
-  /// Whether the start/stop button vibrates under the finger.
-  final bool vibration;
+  /// How strongly the start/stop button vibrates.
+  final VibrationStrength vibration;
 
   /// The classic protocol: a countdown as long as a rest, then rounds of
   /// work and rest, finishing on the last work interval.
@@ -44,7 +44,7 @@ final class TabataSettings {
     int? workSeconds,
     int? restSeconds,
     ThemeMode? themeMode,
-    bool? vibration,
+    VibrationStrength? vibration,
   }) => TabataSettings(
     language: language ?? this.language,
     rounds: rounds ?? this.rounds,

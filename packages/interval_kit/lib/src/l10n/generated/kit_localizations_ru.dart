@@ -34,6 +34,15 @@ class KitLocalizationsRu extends KitLocalizations {
   String get vibration => 'Вибрация';
 
   @override
+  String get vibrationOff => 'Выкл.';
+
+  @override
+  String get vibrationMedium => 'Средняя';
+
+  @override
+  String get vibrationStrong => 'Сильная';
+
+  @override
   String get decrease => 'Уменьшить';
 
   @override

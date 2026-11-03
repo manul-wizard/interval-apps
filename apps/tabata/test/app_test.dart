@@ -62,16 +62,23 @@ void main() {
     expect(find.text('0/9'), findsOneWidget);
   });
 
-  testWidgets('turns vibration off from the settings', (tester) async {
+  testWidgets('sets the vibration strength from the settings', (tester) async {
     await pumpApp(tester);
-    expect(settings.value.vibration, isTrue);
+    expect(settings.value.vibration, VibrationStrength.medium);
 
     await tester.tap(find.byTooltip('Settings'));
     await tester.pumpAndSettle();
-    await tester.tap(find.byType(Switch));
-    await tester.pumpAndSettle();
 
-    expect(settings.value.vibration, isFalse);
+    // The vibration stepper sits under the language one.
+    await tester.tap(find.byIcon(Icons.arrow_circle_left_outlined).last);
+    await tester.pumpAndSettle();
+    expect(settings.value.vibration, VibrationStrength.off);
+
+    await tester.tap(find.byIcon(Icons.arrow_circle_right_outlined).last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.arrow_circle_right_outlined).last);
+    await tester.pumpAndSettle();
+    expect(settings.value.vibration, VibrationStrength.strong);
   });
 
   testWidgets('settings fit a small screen', (tester) async {

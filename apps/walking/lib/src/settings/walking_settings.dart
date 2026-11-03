@@ -10,7 +10,7 @@ final class WalkingSettings {
     this.fastMinutes = 3,
     this.slowMinutes = 3,
     this.themeMode = ThemeMode.system,
-    this.vibration = true,
+    this.vibration = VibrationStrength.medium,
   });
 
   static const roundsRange = IntRange(1, 20);
@@ -28,8 +28,8 @@ final class WalkingSettings {
   /// Light, dark, or [ThemeMode.system] to follow the device.
   final ThemeMode themeMode;
 
-  /// Whether the start/stop button vibrates under the finger.
-  final bool vibration;
+  /// How strongly the start/stop button vibrates.
+  final VibrationStrength vibration;
 
   /// Rounds of fast then slow walking; the last slow interval is the
   /// cool-down. The defaults give the classic 30-minute session.
@@ -46,7 +46,7 @@ final class WalkingSettings {
     int? fastMinutes,
     int? slowMinutes,
     ThemeMode? themeMode,
-    bool? vibration,
+    VibrationStrength? vibration,
   }) => WalkingSettings(
     language: language ?? this.language,
     rounds: rounds ?? this.rounds,
