@@ -53,7 +53,7 @@ class WorkoutScreen extends StatelessWidget {
               final snapshot = controller.snapshot;
               final running = controller.isRunning;
               final paused = controller.status == TimerStatus.paused;
-              final status = controller.status == TimerStatus.paused
+              final status = paused
                   ? l10n.paused
                   : phaseLabel(context, snapshot.phase);
 
@@ -93,9 +93,9 @@ class WorkoutScreen extends StatelessWidget {
                           ? colors.forIntensity(snapshot.phase.intensity)
                           : colors.idle,
                       drainOver: running ? snapshot.remainingInPhase : null,
-                      // Pausing presses the ring in, like the button under
-                      // the finger; the time on top stays put.
-                      pressed: paused,
+                      // The ring rests in the paused look — pressed in and
+                      // muted — whenever the workout is not running.
+                      pressed: !running,
                     ),
                   ),
                   const SizedBox(height: 24),

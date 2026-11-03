@@ -4,8 +4,9 @@ import 'progress_ring.dart';
 
 /// The big countdown: a [ProgressRing] with the time and a caption on top.
 ///
-/// While [pressed] — the workout is paused — the ring alone scales down,
-/// echoing the button under the finger; the time and the caption stay put.
+/// Whenever the workout is not running — paused, freshly opened, reset —
+/// the ring alone rests slightly scaled down, echoing the button under the
+/// finger; the time and the caption stay put.
 class TimerFace extends StatefulWidget {
   const TimerFace({
     required this.time,
@@ -36,7 +37,7 @@ class _TimerFaceState extends State<TimerFace>
 
   late final AnimationController _ringScale = AnimationController(
     vsync: this,
-    value: 1,
+    value: widget.pressed ? _pressedScale : 1,
   );
 
   @override

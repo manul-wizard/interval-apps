@@ -73,6 +73,35 @@ void main() {
     expectSweep(tester, 0);
   });
 
+  testWidgets('a reset sweeps back in the resting color', (tester) async {
+    await pumpRing(tester, color: const Color(0xFF0000FF));
+    await tester.pump(const Duration(seconds: 5));
+
+    // A reset: the sweep back runs together with the change to the
+    // resting color.
+    await tester.pumpWidget(
+      const Center(
+        child: SizedBox.square(
+          dimension: 200,
+          child: ProgressRing(remainingFraction: 1, color: Color(0xFF00FF00)),
+        ),
+      ),
+    );
+    await tester.pump(const Duration(seconds: 1));
+    expect(
+      tester.renderObject(
+        find.descendant(
+          of: find.byType(ProgressRing),
+          matching: find.byType(CustomPaint),
+        ),
+      ),
+      paints
+        // The track falls back to the light palette without a theme.
+        ..arc(sweepAngle: math.pi * 2, color: const Color(0xFFE7DFDA))
+        ..arc(sweepAngle: -2 * math.pi, color: const Color(0xFF00FF00)),
+    );
+  });
+
   testWidgets('refills on reset without draining while paused', (tester) async {
     await pumpRing(tester);
     await tester.pump(const Duration(seconds: 10));

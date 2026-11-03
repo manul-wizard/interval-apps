@@ -133,9 +133,10 @@ class _ProgressRingState extends State<ProgressRing>
         _pendingDrainOver = drainOver;
         _fadeColor(_trackColor, _toTrackDuration);
       } else {
-        // A reset: sweep back to full, where the ring stays until the
-        // workout runs again.
+        // A reset: sweep back to full in the resting color, where the ring
+        // stays until the workout runs again.
         _fill.animateTo(1 - _drain.value, duration: _fillDuration);
+        _fadeColor(widget.color, _colorDuration);
       }
     } else {
       _pendingDrainOver = null;
@@ -167,7 +168,9 @@ class _ProgressRingState extends State<ProgressRing>
   }
 
   /// The fade to the track color finished; swap the new phase in at full
-  /// and let it take the color.
+  /// and let it take the color. The drain starts from where the phase
+  /// really is — the fade time already elapsed — so the ring neither
+  /// jumps nor has to be re-anchored by the next snapshot.
   void _swapPhaseIn(AnimationStatus status, AnimationController controller) {
     final drainOver = _pendingDrainOver;
     if (status != AnimationStatus.completed ||
@@ -177,8 +180,15 @@ class _ProgressRingState extends State<ProgressRing>
     }
     _pendingDrainOver = null;
     _fill.value = 0;
-    _drain.value = 1;
-    _drain.animateTo(0, duration: drainOver);
+    const elapsed = _toTrackDuration;
+    if (drainOver > elapsed) {
+      _drain
+        ..value =
+            (drainOver - elapsed).inMicroseconds / drainOver.inMicroseconds
+        ..animateTo(0, duration: drainOver - elapsed);
+    } else {
+      _drain.value = 0;
+    }
     _fadeColor(widget.color, _fromTrackDuration);
   }
 

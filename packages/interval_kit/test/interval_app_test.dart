@@ -119,7 +119,7 @@ void main() {
     expect((await resetButton()).onPressed, isNull);
   });
 
-  testWidgets('presses the ring in on pause', (tester) async {
+  testWidgets('rests the ring until the workout runs', (tester) async {
     await tester.pumpWidget(app());
     await tester.pump();
 
@@ -135,11 +135,13 @@ void main() {
         .transform
         .entry(0, 0);
 
-    expect(ringScale(), moreOrLessEquals(1));
+    // A fresh app shows the ring in the resting look, like a pause.
+    expect(ringScale(), moreOrLessEquals(0.96, epsilon: 0.01));
 
     await tester.tap(find.text('START'));
     await tester.pump();
-    expect(ringScale(), moreOrLessEquals(1));
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(ringScale(), moreOrLessEquals(1, epsilon: 0.02));
 
     // Pausing rebuilds the screen and starts the press-in; the animation
     // itself ticks from the following frame.
