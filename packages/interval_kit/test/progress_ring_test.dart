@@ -5,8 +5,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:interval_kit/interval_kit.dart';
 
 void main() {
-  /// Expects the ring drawn half full: the track, then the half arc.
-  void expectHalfFull(WidgetTester tester) {
+  /// Expects the ring track and its arc at [sweepAngle].
+  void expectSweep(WidgetTester tester, double sweepAngle) {
     expect(
       tester.renderObject(
         find.descendant(
@@ -16,18 +16,25 @@ void main() {
       ),
       paints
         ..arc(sweepAngle: math.pi * 2)
-        ..arc(sweepAngle: -math.pi),
+        ..arc(sweepAngle: sweepAngle),
     );
   }
 
-  Future<void> pumpRing(WidgetTester tester) => tester.pumpWidget(
-    const Center(
+  /// Expects the ring drawn half full: the track, then the half arc.
+  void expectHalfFull(WidgetTester tester) => expectSweep(tester, -math.pi);
+
+  Future<void> pumpRing(
+    WidgetTester tester, {
+    double fraction = 1,
+    Duration? drainOver = const Duration(seconds: 20),
+  }) => tester.pumpWidget(
+    Center(
       child: SizedBox.square(
         dimension: 200,
         child: ProgressRing(
-          remainingFraction: 1,
-          drainOver: Duration(seconds: 20),
-          color: Color(0xFF00FF00),
+          remainingFraction: fraction,
+          drainOver: drainOver,
+          color: const Color(0xFF00FF00),
         ),
       ),
     ),
@@ -37,6 +44,46 @@ void main() {
     await pumpRing(tester);
     await tester.pump(const Duration(seconds: 10));
     expectHalfFull(tester);
+  });
+
+  testWidgets('refills on its way to draining a new phase', (tester) async {
+    await pumpRing(tester);
+    await tester.pump(const Duration(seconds: 10));
+    expectHalfFull(tester);
+
+    // The next phase arrives full; the ring sweeps back over 250 ms
+    // before draining the new, shorter phase.
+    await pumpRing(tester, drainOver: const Duration(seconds: 10));
+    await tester.pump(const Duration(milliseconds: 125));
+    expectSweep(tester, -1.5 * math.pi);
+    await tester.pump(const Duration(milliseconds: 125));
+    expectSweep(tester, -2 * math.pi);
+
+    // The refill hands the ring to the new phase's drain, which runs the
+    // phase down to the end.
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pump(const Duration(seconds: 15));
+    expectSweep(tester, 0);
+  });
+
+  testWidgets('refills on reset without draining while paused', (tester) async {
+    await pumpRing(tester);
+    await tester.pump(const Duration(seconds: 10));
+    expectHalfFull(tester);
+
+    // A reset: full again, with nothing to drain yet.
+    await tester.pumpWidget(
+      const Center(
+        child: SizedBox.square(
+          dimension: 200,
+          child: ProgressRing(remainingFraction: 1, color: Color(0xFF00FF00)),
+        ),
+      ),
+    );
+    await tester.pump(const Duration(milliseconds: 125));
+    expectSweep(tester, -1.5 * math.pi);
+    await tester.pump(const Duration(milliseconds: 300));
+    expectSweep(tester, -2 * math.pi);
   });
 
   testWidgets('keeps real time when the system turns animations off', (
