@@ -37,9 +37,7 @@ final class SettingsStore {
       language: language == null
           ? AppLanguage.fromLocales(deviceLocales)
           : AppLanguage.fromCode(language),
-      vibration: VibrationStrength.fromCode(
-        _preferences.getString(_vibration),
-      ),
+      vibration: VibrationStrength.fromCode(_preferences.getString(_vibration)),
       rounds: TabataSettings.roundsRange.clamp(
         _preferences.getInt(_rounds) ?? defaults.rounds,
       ),

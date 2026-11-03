@@ -33,9 +33,7 @@ void main() {
     expect(find.text('GET READY'), findsOneWidget);
   });
 
-  testWidgets('sets the vibration strength from the settings', (
-    tester,
-  ) async {
+  testWidgets('sets the vibration strength from the settings', (tester) async {
     final settings = await pumpApp(tester, AppLanguage.english);
     expect(settings.value.vibration, VibrationStrength.medium);
 
