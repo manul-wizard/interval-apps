@@ -105,19 +105,31 @@ class _RepeatingIconButton extends StatefulWidget {
 }
 
 class _RepeatingIconButtonState extends State<_RepeatingIconButton> {
-  static const _repeatInterval = Duration(milliseconds: 80);
+  static const _slowestRepeat = Duration(milliseconds: 450);
+  static const _fastestRepeat = Duration(milliseconds: 60);
+  static const _acceleration = Duration(milliseconds: 30);
 
   Timer? _repeat;
 
   void _startRepeating() {
-    _repeat?.cancel();
-    _repeat = Timer.periodic(_repeatInterval, (_) {
+    _stopRepeating();
+    _repeatAfter(_slowestRepeat);
+  }
+
+  /// Fires [onPressed] after [interval], then keeps firing sooner and
+  /// sooner, down to [_fastestRepeat], until the hold ends. A slow start
+  /// keeps a short press from jumping far; the floor keeps a long press
+  /// quick.
+  void _repeatAfter(Duration interval) {
+    _repeat = Timer(interval, () {
       final onPressed = widget.onPressed;
       if (onPressed == null) {
         _stopRepeating();
-      } else {
-        onPressed();
+        return;
       }
+      onPressed();
+      final faster = interval - _acceleration;
+      _repeatAfter(faster > _fastestRepeat ? faster : _fastestRepeat);
     });
   }
 

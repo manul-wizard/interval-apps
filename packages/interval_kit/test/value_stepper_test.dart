@@ -41,7 +41,7 @@ void main() {
     expect(changed, isNull);
   });
 
-  testWidgets('repeats while the button is held', (tester) async {
+  testWidgets('repeats faster the longer the button is held', (tester) async {
     final changes = <int>[];
     await pumpStepper(tester, value: 1, onChanged: changes.add);
 
@@ -49,9 +49,13 @@ void main() {
       tester.getCenter(find.byIcon(Icons.add_circle_outline)),
     );
     await tester.pump(kLongPressTimeout);
+    // The first repeat waits a beat, so a plain long press barely moves.
     await tester.pump(const Duration(milliseconds: 250));
+    expect(changes, isEmpty);
+
+    await tester.pump(const Duration(seconds: 2));
     await gesture.up();
 
-    expect(changes.length, greaterThan(1));
+    expect(changes.length, greaterThan(4));
   });
 }
